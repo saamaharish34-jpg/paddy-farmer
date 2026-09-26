@@ -1,0 +1,39 @@
+body {
+    font-family: Arial;
+    background: #f1f8e9;
+}
+
+.container {
+    width: 400px;
+    margin: 40px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+}
+
+h2 {
+    text-align: center;
+    color: green;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 9px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background: green;
+    color: white;
+    border: none;
+    cursor: pointer;
+}

@@ -1,0 +1,20 @@
+{
+  "name": "paddy-farmer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "mysql2": "^3.24.4",
+    "openai": "^7.23.0",
+    "oracledb": "^7.0.1"
+  }
+}

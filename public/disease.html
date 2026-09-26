@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Paddy Farmers - Disease Finding</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        video,
+        canvas,
+        #preview {
+
+            width: 100%;
+            max-width: 500px;
+            border-radius: 10px;
+            margin: 10px 0;
+
+        }
+
+        #resultSection {
+
+            display: none;
+
+        }
+
+        .result-box {
+
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            background: #f1f8e9;
+
+        }
+
+        #loading {
+
+            display: none;
+            font-weight: bold;
+            margin: 15px 0;
+
+        }
+
+        #aiResult {
+
+            white-space: pre-line;
+            line-height: 1.6;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <h1>🌾 Paddy Farmers</h1>
+
+    <h2>🔍 Disease Finding</h2>
+
+
+    <!-- CAMERA -->
+
+    <h3>📷 Camera</h3>
+
+    <video
+        id="camera"
+        autoplay
+        playsinline>
+    </video>
+
+
+    <br>
+
+
+    <button
+        type="button"
+        onclick="openCamera()">
+
+        📷 Open Camera
+
+    </button>
+
+
+    <button
+        type="button"
+        onclick="capturePhoto()">
+
+        📸 Capture Paddy Leaf
+
+    </button>
+
+
+    <!-- CANVAS -->
+
+    <canvas
+        id="canvas"
+        style="display:none;">
+    </canvas>
+
+
+    <!-- CAPTURED IMAGE -->
+
+    <h3>📸 Captured Photo</h3>
+
+    <img
+        id="preview"
+        style="display:none;">
+
+
+    <br>
+
+
+    <!-- ANALYZE -->
+
+    <h3>🔍 Disease Analysis</h3>
+
+
+    <button
+        type="button"
+        onclick="analyzeImage()">
+
+        🔍 Analyze Image
+
+    </button>
+
+
+    <!-- LOADING -->
+
+    <p id="loading">
+
+        ⏳ Analyzing paddy leaf image... Please wait.
+
+    </p>
+
+
+    <!-- RESULT -->
+
+    <div id="resultSection">
+
+
+        <h3>🦠 Disease / Pest Detection</h3>
+
+
+        <div class="result-box">
+
+
+            <h3>📋 AI Analysis Result</h3>
+
+
+            <p id="aiResult"></p>
+
+
+        </div>
+
+
+    </div>
+
+
+    <br>
+
+
+    <!-- BACK -->
+
+    <button
+        type="button"
+        onclick="window.location.href='dashboard.html'">
+
+        ← Back to Dashboard
+
+    </button>
+
+
+</div>
+
+
+
+<script>
+
+
+// ============================
+// VARIABLES
+// ============================
+
+let camera =
+    document.getElementById("camera");
+
+let canvas =
+    document.getElementById("canvas");
+
+let preview =
+    document.getElementById("preview");
+
+let stream = null;
+
+
+
+// ============================
+// OPEN CAMERA
+// ============================
+
+async function openCamera() {
+
+    try {
+
+        stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+
+                    facingMode: "environment"
+
+                },
+
+                audio: false
+
+            });
+
+
+        camera.srcObject = stream;
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Camera permission denied or camera not available."
+        );
+
+    }
+
+}
+
+
+
+// ============================
+// CAPTURE PHOTO
+// ============================
+
+function capturePhoto() {
+
+
+    if (!stream) {
+
+        alert(
+            "First click Open Camera."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        camera.videoWidth === 0 ||
+        camera.videoHeight === 0
+    ) {
+
+        alert(
+            "Camera is not ready. Please wait a few seconds."
+        );
+
+        return;
+
+    }
+
+
+    canvas.width =
+        camera.videoWidth;
+
+    canvas.height =
+        camera.videoHeight;
+
+
+    let context =
+        canvas.getContext("2d");
+
+
+    context.drawImage(
+
+        camera,
+
+        0,
+        0,
+
+        canvas.width,
+        canvas.height
+
+    );
+
+
+    let imageData =
+        canvas.toDataURL("image/jpeg");
+
+
+    preview.src =
+        imageData;
+
+
+    preview.style.display =
+        "block";
+
+
+    alert(
+        "Paddy leaf photo captured successfully!"
+    );
+
+}
+
+
+
+// ============================
+// ANALYZE IMAGE
+// ============================
+
+async function analyzeImage() {
+
+
+    // Check photo
+
+    if (
+        !preview.src ||
+        preview.style.display === "none"
+    ) {
+
+        alert(
+            "First capture a Paddy leaf photo."
+        );
+
+        return;
+
+    }
+
+
+    // Show loading
+
+    document.getElementById(
+        "loading"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "resultSection"
+    ).style.display = "none";
+
+
+    try {
+
+
+        // Convert image to Blob
+
+        const response =
+            await fetch(preview.src);
+
+
+        const blob =
+            await response.blob();
+
+
+        // Create FormData
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+
+            "image",
+
+            blob,
+
+            "paddy-leaf.jpg"
+
+        );
+
+
+        // Send image to Node.js
+
+        const result =
+            await fetch(
+
+                "/analyze-disease",
+
+                {
+
+                    method: "POST",
+
+                    body: formData
+
+                }
+
+            );
+
+
+        // Convert server response
+
+        const data =
+            await result.json();
+
+
+        // Hide loading
+
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
+
+
+        // Check error
+
+        if (!result.ok) {
+
+            throw new Error(
+                data.error ||
+                "Image analysis failed."
+            );
+
+        }
+
+
+        // Show result
+
+        document.getElementById(
+            "resultSection"
+        ).style.display = "block";
+
+
+        // Display OpenAI result
+
+        document.getElementById(
+            "aiResult"
+        ).textContent =
+            data.result;
+
+
+    }
+
+    catch (error) {
+
+
+        console.error(
+            "Analysis Error:",
+            error
+        );
+
+
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
+
+
+        alert(
+            "Image analysis failed.\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

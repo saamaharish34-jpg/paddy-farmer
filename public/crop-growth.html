@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Paddy Farmers - Crop Growth</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🌾 Paddy Farmers</h1>
+
+    <h2>📈 Crop Growth Monitoring</h2>
+
+    <p>Select the current growth stage:</p>
+
+    <button onclick="showStage('seed')">🌱 Seed</button>
+
+    <button onclick="showStage('germination')">🌿 Germination</button>
+
+    <button onclick="showStage('vegetative')">🌾 Vegetative</button>
+
+    <button onclick="showStage('flowering')">🌼 Flowering</button>
+
+    <button onclick="showStage('formation')">🌾 Formation</button>
+
+    <button onclick="showStage('maturity')">🌾 Maturity</button>
+
+    <button onclick="showStage('harvest')">🚜 Harvest</button>
+
+    <div id="guidance"></div>
+
+    <br>
+
+    <button onclick="window.location.href='dashboard.html'">
+        ← Back to Dashboard
+    </button>
+
+</div>
+
+<script>
+
+function showStage(stage) {
+
+    let guidance = document.getElementById("guidance");
+
+    if (stage === "seed") {
+        guidance.innerHTML =
+        "<h3>🌱 Seed Stage</h3>" +
+        "<p>Select suitable paddy seeds and prepare them for planting.</p>";
+    }
+
+    else if (stage === "germination") {
+        guidance.innerHTML =
+        "<h3>🌿 Germination Stage</h3>" +
+        "<p>Provide proper water and care for early crop growth.</p>";
+    }
+
+    else if (stage === "vegetative") {
+        guidance.innerHTML =
+        "<h3>🌾 Vegetative Stage</h3>" +
+        "<p>Focus on nutrients and weed management.</p>";
+    }
+
+    else if (stage === "flowering") {
+        guidance.innerHTML =
+        "<h3>🌼 Flowering Stage</h3>" +
+        "<p>Pay attention to crop protection and irrigation.</p>";
+    }
+
+    else if (stage === "formation") {
+        guidance.innerHTML =
+        "<h3>🌾 Formation Stage</h3>" +
+        "<p>Monitor water and nutrient management.</p>";
+    }
+
+    else if (stage === "maturity") {
+        guidance.innerHTML =
+        "<h3>🌾 Maturity Stage</h3>" +
+        "<p>Check whether the crop is ready for harvesting.</p>";
+    }
+
+    else if (stage === "harvest") {
+        guidance.innerHTML =
+        "<h3>🚜 Harvest Stage</h3>" +
+        "<p>Prepare for harvesting and select a suitable harvesting method.</p>";
+    }
+}
+
+</script>
+
+</body>
+
+</html>

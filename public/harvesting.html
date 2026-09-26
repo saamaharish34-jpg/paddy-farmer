@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Paddy Farmers - Harvesting & Machinery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🌾 Paddy Farmers</h1>
+
+    <h2>🚜 Harvesting & Machinery</h2>
+
+    <label>Select Paddy Crop:</label>
+
+    <select id="crop">
+        <option value="paddy">Paddy</option>
+    </select>
+
+    <br><br>
+
+    <label>Enter Land Area (Acres):</label>
+
+    <input type="number" id="land" min="0.1" step="0.1">
+
+    <br><br>
+
+    <label>Select Harvesting Requirement:</label>
+
+    <select id="requirement">
+
+        <option value="combine">
+            Combine Harvesting
+        </option>
+
+        <option value="manual">
+            Manual Harvesting
+        </option>
+
+    </select>
+
+    <br><br>
+
+    <button onclick="showMachine()">
+        🔍 Find Suitable Machine
+    </button>
+
+    <div id="result"></div>
+
+    <br>
+
+    <button onclick="window.location.href='dashboard.html'">
+        ← Back to Dashboard
+    </button>
+
+</div>
+
+
+<script>
+
+function showMachine() {
+
+    let land = document.getElementById("land").value;
+
+    let requirement =
+        document.getElementById("requirement").value;
+
+    let result =
+        document.getElementById("result");
+
+    if (land === "") {
+
+        alert("Please enter land area.");
+
+        return;
+    }
+
+
+    if (requirement === "combine") {
+
+        result.innerHTML =
+
+        "<h3>🚜 Suitable Machine</h3>" +
+
+        "<p><b>Machine Name:</b> Paddy Combine Harvester</p>" +
+
+        "<p><b>Crop Suitability:</b> Paddy</p>" +
+
+        "<p><b>Land Area:</b> " + land + " Acres</p>" +
+
+        "<p><b>Capacity:</b> Suitable for large-scale harvesting</p>" +
+
+        "<p><b>Operating Information:</b> Machine cuts, threshes and collects the harvested crop.</p>" +
+
+        "<p><b>Availability:</b> Contact local machinery provider.</p>" +
+
+        "<p><b>Contact:</b> Contact nearby rental service.</p>";
+
+    }
+
+
+    else {
+
+        result.innerHTML =
+
+        "<h3>🌾 Manual Harvesting</h3>" +
+
+        "<p><b>Crop:</b> Paddy</p>" +
+
+        "<p><b>Land Area:</b> " + land + " Acres</p>" +
+
+        "<p><b>Method:</b> Manual cutting and harvesting.</p>" +
+
+        "<p><b>Requirement:</b> Labourers and harvesting tools.</p>" +
+
+        "<p><b>Availability:</b> Contact local agricultural labourers.</p>";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>
