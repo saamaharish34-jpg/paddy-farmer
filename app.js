@@ -1,9 +1,11 @@
 const express = require("express");
 const oracledb = require("oracledb");
 const multer = require("multer");
+require("dotenv").config();
 
 const app = express();
-const PORT = 3000;
+
+const PORT = process.env.PORT || 3000;
 
 
 // ====================
@@ -29,9 +31,9 @@ const upload = multer({
 // ====================
 
 const dbConfig = {
-    user: "system",
-    password: "Oracle123",
-    connectString: "localhost:1521/XEPDB1"
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    connectString: process.env.DB_CONNECT_STRING
 };
 
 
@@ -89,16 +91,18 @@ app.post("/register", async (req, res) => {
             }
         );
 
-        // Registration complete
-        // Go to Login page
-
         res.redirect("/login.html");
 
     } catch (err) {
 
-        console.error("REGISTRATION ERROR:", err);
+        console.error(
+            "REGISTRATION ERROR:",
+            err
+        );
 
-        res.send("Registration Failed! Check terminal.");
+        res.send(
+            "Registration Failed! Check terminal."
+        );
 
     } finally {
 
@@ -107,6 +111,7 @@ app.post("/register", async (req, res) => {
         }
 
     }
+
 });
 
 
@@ -140,9 +145,6 @@ app.post("/login", async (req, res) => {
 
         if (result.rows.length > 0) {
 
-            // Login successful
-            // Go to Dashboard
-
             res.redirect("/dashboard.html");
 
         } else {
@@ -155,7 +157,10 @@ app.post("/login", async (req, res) => {
 
     } catch (err) {
 
-        console.error("LOGIN ERROR:", err);
+        console.error(
+            "LOGIN ERROR:",
+            err
+        );
 
         res.send("Login Failed!");
 
@@ -166,6 +171,7 @@ app.post("/login", async (req, res) => {
         }
 
     }
+
 });
 
 
@@ -180,7 +186,9 @@ app.post(
 
         try {
 
-            console.log("Paddy leaf image received!");
+            console.log(
+                "Paddy leaf image received!"
+            );
 
             if (!req.file) {
 
@@ -196,7 +204,7 @@ app.post(
                 "bytes"
             );
 
-            // AI is currently paused
+            // AI analysis is currently paused
 
             res.json({
                 result:
@@ -224,15 +232,20 @@ app.post(
 // SERVER START
 // ====================
 
-const server = app.listen(PORT, () => {
+const server = app.listen(
+    PORT,
+    () => {
 
-    console.log("SERVER STARTED");
+        console.log(
+            "SERVER STARTED"
+        );
 
-    console.log(
-        "Website: http://localhost:3000"
-    );
+        console.log(
+            `Website: http://localhost:${PORT}`
+        );
 
-});
+    }
+);
 
 
 // ====================
