@@ -1,5 +1,5 @@
 const express = require("express");
-const oracledb = require("oracledb");
+const { Pool } = require("pg");
 const multer = require("multer");
 require("dotenv").config();
 
@@ -14,6 +14,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.urlencoded({ extended: true }));
 
+app.use(express.json());
+
 app.use(express.static("public"));
 
 
@@ -27,14 +29,41 @@ const upload = multer({
 
 
 // ====================
-// ORACLE DATABASE
+// SUPABASE POSTGRES DATABASE
 // ====================
 
-const dbConfig = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    connectString: process.env.DB_CONNECT_STRING
-};
+const pool = new Pool({
+    host: process.env.PGHOST,
+    port: Number(process.env.PGPORT),
+    database: process.env.PGDATABASE,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+
+// ====================
+// TEST DATABASE CONNECTION
+// ====================
+
+pool.query("SELECT NOW()")
+    .then(() => {
+
+        console.log(
+            "SUPABASE DATABASE CONNECTED"
+        );
+
+    })
+    .catch((err) => {
+
+        console.error(
+            "DATABASE CONNECTION ERROR:",
+            err
+        );
+
+    });
 
 
 // ====================
@@ -56,8 +85,6 @@ app.get("/", (req, res) => {
 
 app.post("/register", async (req, res) => {
 
-    let connection;
-
     try {
 
         const {
@@ -70,14 +97,12 @@ app.post("/register", async (req, res) => {
             paddy
         } = req.body;
 
-        connection = await oracledb.getConnection(dbConfig);
 
-        await connection.execute(
+        await pool.query(
             `INSERT INTO farmers
             (name, mobile, password, village, district, land, paddy)
-            VALUES
-            (:name, :mobile, :password, :village, :district, :land, :paddy)`,
-            {
+            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+            [
                 name,
                 mobile,
                 password,
@@ -85,13 +110,19 @@ app.post("/register", async (req, res) => {
                 district,
                 land,
                 paddy
-            },
-            {
-                autoCommit: true
-            }
+            ]
         );
 
-        res.redirect("/login.html");
+
+        console.log(
+            "FARMER REGISTERED"
+        );
+
+
+        res.redirect(
+            "/login.html"
+        );
+
 
     } catch (err) {
 
@@ -100,15 +131,10 @@ app.post("/register", async (req, res) => {
             err
         );
 
+
         res.send(
             "Registration Failed! Check terminal."
         );
-
-    } finally {
-
-        if (connection) {
-            await connection.close();
-        }
 
     }
 
@@ -121,8 +147,6 @@ app.post("/register", async (req, res) => {
 
 app.post("/login", async (req, res) => {
 
-    let connection;
-
     try {
 
         const {
@@ -130,22 +154,30 @@ app.post("/login", async (req, res) => {
             password
         } = req.body;
 
-        connection = await oracledb.getConnection(dbConfig);
 
-        const result = await connection.execute(
+        const result = await pool.query(
             `SELECT name
              FROM farmers
-             WHERE mobile = :mobile
-             AND password = :password`,
-            {
+             WHERE mobile = $1
+             AND password = $2`,
+            [
                 mobile,
                 password
-            }
+            ]
         );
+
 
         if (result.rows.length > 0) {
 
-            res.redirect("/dashboard.html");
+            console.log(
+                "LOGIN SUCCESS"
+            );
+
+
+            res.redirect(
+                "/dashboard.html"
+            );
+
 
         } else {
 
@@ -155,6 +187,7 @@ app.post("/login", async (req, res) => {
 
         }
 
+
     } catch (err) {
 
         console.error(
@@ -162,13 +195,10 @@ app.post("/login", async (req, res) => {
             err
         );
 
-        res.send("Login Failed!");
 
-    } finally {
-
-        if (connection) {
-            await connection.close();
-        }
+        res.send(
+            "Login Failed!"
+        );
 
     }
 
@@ -190,13 +220,17 @@ app.post(
                 "Paddy leaf image received!"
             );
 
+
             if (!req.file) {
 
                 return res.status(400).json({
+
                     error: "No image received"
+
                 });
 
             }
+
 
             console.log(
                 "Image size:",
@@ -204,12 +238,14 @@ app.post(
                 "bytes"
             );
 
-            // AI analysis is currently paused
 
             res.json({
+
                 result:
                     "Image received successfully. AI disease analysis is currently paused."
+
             });
+
 
         } catch (error) {
 
@@ -218,8 +254,12 @@ app.post(
                 error
             );
 
+
             res.status(500).json({
-                error: "Image upload failed."
+
+                error:
+                    "Image upload failed."
+
             });
 
         }
@@ -240,6 +280,7 @@ const server = app.listen(
             "SERVER STARTED"
         );
 
+
         console.log(
             `Website: http://localhost:${PORT}`
         );
@@ -252,14 +293,17 @@ const server = app.listen(
 // SERVER ERROR
 // ====================
 
-server.on("error", (err) => {
+server.on(
+    "error",
+    (err) => {
 
-    console.error(
-        "SERVER ERROR:",
-        err
-    );
+        console.error(
+            "SERVER ERROR:",
+            err
+        );
 
-});
+    }
+);
 
 
 // ====================
